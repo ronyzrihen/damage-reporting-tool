@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {getAll, getById} = require('./repository');
+const {getAll, getById, putReport} = require('./repository');
 const url = require('url');
 
 module.exports = {
@@ -22,7 +22,17 @@ module.exports = {
         data = JSON.stringify(getById(id));
         res.writeHead(200, {'Content-Type':'application/json'});
         res.end(data);
+    },
+    updateReport : (req, res)=>{
+        let reqBody = '';
+        req.on('data', (chunk)=>{
+            reqBody +=chunk;
+        });
 
+        req.on('end', ()=>{
+            const data = JSON.parse(reqBody);
+            putReport(data);
 
+        })
     }
 }

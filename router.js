@@ -19,7 +19,7 @@ const {method, url} = req;
     } else if (method=== 'POST') {
 
     } else if (method === 'PUT') {
-
+        controller.updateReport(req, res);
     } else if (method === 'DELETE') {
 
 

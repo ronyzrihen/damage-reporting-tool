@@ -13,7 +13,10 @@ const postReport = (report)=>{
     reports.push(report);
 }
 
-// post new item to
+// put Report
+const putReport = (report)=>{
+    reports.findIndex(() => report.id)
+}
 
 
-module.exports = {getAll, getById}
+module.exports = {getAll, getById, putReport}
