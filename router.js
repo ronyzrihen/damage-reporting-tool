@@ -1,4 +1,4 @@
-// const controller = require('controller');
+const controller = require('./controller');
 const url = require('url')
 const fs = require('fs');
 
@@ -7,26 +7,20 @@ const fs = require('fs');
 
 
 module.exports = {router : (req,res) => {
-
-    if (req.method === 'GET') {
+const {method, url} = req;
+    if (method === 'GET') {
         if(req.url === '/'){
-            fs.readFile('./index.html', (err,data) => {
-                if(err)
-                    throw new Error(err);
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(data);
-                return;
-            });
-
+           controller.home(req,res);
+        } else if(url === '/reports' || url === '/reports/'){
+            controller.getReports(req, res);
+        }else if(url.startsWith('/reports/')){
+            controller.getReportsById(req, res);
         }
-    }
-    if (req.method === 'POST') {
+    } else if (method=== 'POST') {
 
-    }
-    if (req.method === 'PUT') {
+    } else if (method === 'PUT') {
 
-    }
-    if (req.method === 'DELETE') {
+    } else if (method === 'DELETE') {
 
 
     }
