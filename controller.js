@@ -1,65 +1,104 @@
-const fs = require('fs');
-const {getAll, getById, writeReport} = require('./repository');
+const {readReports, getById, deleteReport, putReport, postReport} = require('./repository');
 const url = require('url');
+//todo create ui
+
+//function that extract ID from different url formats
+const checkUrlId = (req)=>{
+    const reqUrl = url.parse(req.url, true);
+    const idString = req.url.split("/")[2];
+    let urlId;
+    if(req.url.split("/").length > 2 && idString.split("?")[0]) urlId = idString.split("?")[0];
+    if(!urlId){
+        urlId = reqUrl.query['id'];
+    }
+    return urlId;
+}
+
 
 module.exports = {
-    home: (req,res) =>{
-        fs.readFile('./index.html', (err,data) => {
+    home: (req, res) => {
+        fs.readFile('./index.html', (err, data) => {
             if (err)
                 throw new Error(err);
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end(data);
         });
     },
-    getReports : (req, res) => {
-        const data = JSON.stringify(getAll());
+    getReports: (req, res) => {
+        const data = JSON.stringify(readReports());
+        // check if DB has no content
+        if (!data) {
+            res.statusCode = 204;
+            res.end();
+        }
         res.statusCode = 200;
         res.end(data);
     },
-    getReportsById: (req, res) =>{
-        const reqUrl = url.parse(req.url, true);
-        const id = reqUrl.query['id'];
-        const data = JSON.stringify(getById(id));
-        res.writeHead(200, {'Content-Type':'application/json'});//todo add res 400 if not found
+    getReportsById: (req, res) => {
+        const reqUrl= checkUrlId(req);
+        const data = JSON.stringify(getById(reqUrl));
+        if (!data) {
+            res.statusCode = 404;
+            res.end("ID not found.");
+            return;
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(data);
     },
-    updateReport : (req, res)=>{
+    updateReport: (req, res) => {
         let reqBody = '';
-        req.on('data', (chunk)=>{
-            reqBody +=chunk;
+        req.on('data', (chunk) => {
+            reqBody += chunk;
         });
 
-        req.on('end', ()=>{
+        req.on('end', () => {
             const newReport = JSON.parse(reqBody);
-            const data = getAll(); //todo not sure if to put this here or in repos
-
-            if(req.method === 'PUT') {
-
-                const reportIndex = data.findIndex(row => row["id"] === newReport["id"])
-                if (reportIndex === -1) {
+            const reqId = checkUrlId(req);
+            // check if id was given
+            if (req.method === 'PUT') {
+                if (!reqId) {
                     res.statusCode = 404;
-                    req.end("Id not found.");
+                    res.end("id not provided");
                     return;
                 }
-
-                data[reportIndex] = newReport;
-                writeReport(data);
+                try {
+                    putReport(newReport, reqId);
+                    res.statusCode = 201;
+                    res.end("Database updated successfully");
+                    return;
+                } catch (err) {
+                    res.statusCode = 404;
+                    res.end(err.message);
+                }
+            }
+            // POST REQUEST
+            try {
+                postReport(newReport);
                 res.statusCode = 201;
-                res.end("Database updated successfully");
-                return;
-            }
-            // POST REQUEST //todo consider dividing methods
-            if(data.findIndex(row => row["id"] === newReport["id"]) !== -1){
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.end("ID already exist.");
+                res.end("New report was added");
+            } catch (err) {
+                res.statusCode = 400;
+                res.end(err.message);
             }
 
-            data.push(newReport);
-            writeReport(data);
-            res.statusCode = 201;
-            res.end("New report was added");
         });
+    },
+    deleteReport: (req, res) => {
+        const reqId = checkUrlId(req);
+        // checkin if request had specified ID in query string
+        if (!reqId) {
+            res.statusCode = 404;
+            res.end("ID not found.");
+        }
+        try {
+            deleteReport(reqId);
+            res.statusCode = 204;
+            res.end("Deleted successfully");
+        } catch (err) {
+            res.statusCode = 404;
+            res.end("ID not found.");
+        }
     }
-    //todo deleteReport function
+
 
 }
