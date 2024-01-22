@@ -16,9 +16,7 @@ const {method, url} = req;
         }else if(url.startsWith('/reports/')){
             controller.getReportsById(req, res);
         }
-    } else if (method=== 'POST') {
-
-    } else if (method === 'PUT') {
+    } else if (method === 'PUT' || method === 'POST') { //todo might need to split those to
         controller.updateReport(req, res);
     } else if (method === 'DELETE') {
 

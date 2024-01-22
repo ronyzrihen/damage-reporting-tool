@@ -1,4 +1,5 @@
-const reports = require('./DB/DB.json');
+const {reports} = require('./DB/DB.json');
+const fs = require('fs');
 // return all reports:
 const  getAll = () =>{
     return reports;
@@ -6,17 +7,14 @@ const  getAll = () =>{
 
 // returns report by ID
 const getById = (id)=>{
-    return reports.find((report) => report.id === id);
-}
-// posting new report
-const postReport = (report)=>{
-    reports.push(report);
+    return reports.find((report) => report["id"] === id);
 }
 
-// put Report
-const putReport = (report)=>{
-    reports.findIndex(() => report.id)
-}
+// update database
+const writeReport = (data)=>{
+    const newData = {"reports":data}; // rebuilding data into DB
+    fs.writeFileSync('./DB/DB.json', JSON.stringify(newData));
+};
 
 
-module.exports = {getAll, getById, putReport}
+module.exports = {getAll, getById, writeReport}

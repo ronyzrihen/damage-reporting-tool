@@ -1,8 +1,1 @@
-[
-    {
-      "Type":"First report",
-      "Description": "GOOOOD DA DAMAGE IS TOO BIIIG",
-      "id": "1"
-    }
-
-]
+{"reports":[{"type":"Fire","description":"OMG THIS GIL IS ON FIRE!","id":"1"},{"type":"First report","description":"GOOOOD DA DAMAGE IS TOO BIIIG","id":"2"},{"type":"Volcano","Description":"THE FLOOR IS LAVA!!! IT WAS A BLAST!","id":"1"},{"type":"Volcano","Description":"THE FLOOR IS LAVA!!! IT WAS A BLAST!","id":"1"}]}
