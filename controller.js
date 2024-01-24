@@ -1,5 +1,6 @@
 const {readReports, getById, deleteReport, putReport, postReport} = require('./repository');
 const url = require('url');
+const fs = require('fs');
 //todo create ui
 
 //function that extract ID from different url formats
@@ -7,11 +8,23 @@ const checkUrlId = (req)=>{
     const reqUrl = url.parse(req.url, true);
     const idString = req.url.split("/")[2];
     let urlId;
-    if(req.url.split("/").length > 2 && idString.split("?")[0]) urlId = idString.split("?")[0];
+    // check if id exist in URL path
+    if(req.url.split("/").length > 2 && idString.split("?")[0]){
+        urlId = idString.split("?")[0];
+    }
+    // check if id exist in query
     if(!urlId){
         urlId = reqUrl.query['id'];
     }
     return urlId;
+}
+
+// function to send responses and error messages
+const errorHandle = (res, statusCode, msg= "" , contentType = 'text/plain')=>{
+    res.statusCode = statusCode;
+    res.setHeader('Content-Type', contentType);
+    res.end(msg);
+    console.log(`response sent: ${statusCode}, ${msg} `);
 }
 
 
@@ -19,31 +32,26 @@ module.exports = {
     home: (req, res) => {
         fs.readFile('./index.html', (err, data) => {
             if (err)
-                throw new Error(err);
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(data);
+                throw err;
+            errorHandle(res, 200, data, 'text/html');
         });
     },
     getReports: (req, res) => {
         const data = JSON.stringify(readReports());
         // check if DB has no content
         if (!data) {
-            res.statusCode = 204;
-            res.end();
+            errorHandle(res,204 );
         }
-        res.statusCode = 200;
-        res.end(data);
+        errorHandle(res, 200, data, "application/json");
     },
     getReportsById: (req, res) => {
         const reqUrl= checkUrlId(req);
         const data = JSON.stringify(getById(reqUrl));
         if (!data) {
-            res.statusCode = 404;
-            res.end("ID not found.");
+            errorHandle(res, 404, "id not found");
             return;
         }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(data);
+        errorHandle(res, 200 , data, "application/json");
     },
     updateReport: (req, res) => {
         let reqBody = '';
@@ -57,28 +65,23 @@ module.exports = {
             // check if id was given
             if (req.method === 'PUT') {
                 if (!reqId) {
-                    res.statusCode = 404;
-                    res.end("id not provided");
+                    errorHandle(res, 404,  "id not provided");
                     return;
                 }
                 try {
                     putReport(newReport, reqId);
-                    res.statusCode = 201;
-                    res.end("Database updated successfully");
+                    errorHandle(res, 201, "Database updated successfully");
                     return;
                 } catch (err) {
-                    res.statusCode = 404;
-                    res.end(err.message);
+                    errorHandle(res, 404, err.message);
                 }
             }
             // POST REQUEST
             try {
                 postReport(newReport);
-                res.statusCode = 201;
-                res.end("New report was added");
+                errorHandle(res, 201, "New report was added");
             } catch (err) {
-                res.statusCode = 400;
-                res.end(err.message);
+                errorHandle(res, 400, err.message);
             }
 
         });
@@ -87,16 +90,14 @@ module.exports = {
         const reqId = checkUrlId(req);
         // checkin if request had specified ID in query string
         if (!reqId) {
-            res.statusCode = 404;
-            res.end("ID not found.");
+            errorHandle(res, 404, "id not found");
+            return;
         }
         try {
             deleteReport(reqId);
-            res.statusCode = 204;
-            res.end("Deleted successfully");
+            errorHandle(res, 204, "Deleted successfully");
         } catch (err) {
-            res.statusCode = 404;
-            res.end("ID not found.");
+            errorHandle(res, 404, "id not found");
         }
     }
 

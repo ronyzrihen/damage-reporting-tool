@@ -3,8 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Damage Reporting Tool</title>
+    <script></script>
 </head>
 <body>
-<h1>HI AND WELCOME TO UOR DAMAGE REPORTING TOOL!</h1>
+<h1>HI AND WELCOME TO OUR DAMAGE REPORTING TOOL!</h1>
+<form action="http://localhost:3000/" method="GET" >
+    <input type="submit" value="Submit">
+</form>
+<form action="http://localhost:3000/" method="GET" >
+    <label>
+        <input type="number" name="idNumber">
+    </label>
+    <input type="submit" value="Submit">
+</form>
+<form action="http://localhost:3000/" method="POST" >
+    <label>
+        <input type="text" name="type">
+    </label>
+    <label>
+        <input type="text" name="location">
+    </label>
+    <label>
+        <textarea name="message" rows="10" cols="30"></textarea>
+    </label>
+    <input type="submit" value="Submit">
+</form>
 </body>
 </html>
+
