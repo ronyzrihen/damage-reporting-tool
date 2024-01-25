@@ -5,6 +5,8 @@ const fs = require('fs');
 
 //function that extract ID from different url formats
 const checkUrlId = (req)=>{
+
+
     const reqUrl = url.parse(req.url, true);
     const idString = req.url.split("/")[2];
     let urlId;
