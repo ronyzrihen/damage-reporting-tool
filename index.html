@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Damage Reporting Tool</title>
+    <script>
+         window.onload = ()=>{
+             console.log("page fully loaded");
+            document.getElementById('getReports').onclick = async ()=>{
+                const thisButton =  document.getElementById('getReports');
+                console.log("fetching");
+                 const response = await fetch('http://localhost:3000/reports');
+                 const data = await response.json();
+                 console.log();
+
+                 const allReports = document.createElement('section');
+                 const dataList = document.createElement('ul');
+                for(const item  in data){
+                    console.log(data[item]['type']);
+                    const index = data[item];
+                    const listItem = document.createElement('li');
+                    listItem.innerText = `Damage ID: ${index['id']}\nDamage Type: ${index['type']}\nDamage description: "${index['description']}"\n`;
+                    dataList.appendChild(listItem);
+                }
+                allReports.appendChild(dataList);
+                thisButton.parentNode.appendChild(allReports);
+                thisButton.disabled = true;
+                console.log(document.getElementById('getReports'));
+
+             }
+         }
+    </script>
+</head>
+<body>
+<h1 class="container-fluid text-center mt-4">WELCOME TO THE DAMAGE REPORTING TOOL!</h1>
+
+<section class="container-fluid d-flex align-content-center flex-column mt-5">
+    <h3>Get all reports</h3>
+    <section>
+    <input type="submit" class="btn btn-primary" value="Submit"  id="getReports" >
+    </section>
+</section>
+
+
+<!--<form action="http://localhost:3000/" method="GET" >-->
+<!--    <label>-->
+<!--        <input type="number" name="idNumber">-->
+<!--    </label>-->
+<!--    <input type="submit" value="Submit">-->
+<!--</form>-->
+<!--<form action="http://localhost:3000/" method="POST" >-->
+<!--    <label>-->
+<!--        <input type="text" name="type">-->
+<!--    </label>-->
+<!--    <label>-->
+<!--        <input type="text" name="location">-->
+<!--    </label>-->
+<!--    <label>-->
+<!--        <textarea name="message" rows="10" cols="30"></textarea>-->
+<!--    </label>-->
+<!--    <input type="submit" value="Submit">-->
+<!--</form>-->
+</body>
+</html>
+
