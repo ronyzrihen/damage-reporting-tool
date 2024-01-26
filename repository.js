@@ -19,6 +19,7 @@ const getById = (id) => {
 // put report
 const putReport = (report, reportId) => {
     const reportIndex = reports.findIndex(row => row['id'] === reportId);
+    if(!report['id'] || !reportId) throw new Error("id not provided");
     if (reportIndex === -1) throw new Error("id not found");
     // checking if id was updated
         if (report.id !== reportId) {
